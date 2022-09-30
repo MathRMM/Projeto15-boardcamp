@@ -1,13 +1,16 @@
 import { connection } from "./database.js";
 
-const getCategories = async()=>{
+const getCategories = async(categoryName)=>{
+    if(categoryName){
+        const categories = await connection.query('SELECT * FROM categories WHERE name = $1;', [categoryName]);
+        return categories.rows
+    }
     const categories = await connection.query('SELECT * FROM categories;');
     return categories.rows
 };
 
-const insertCategory = async (category)=>{
-    console.log(category)
-    await connection.query('INSERT INTO categories (name) VALUES ($1);', [category]);
+const insertCategory = async (categoryName)=>{
+    await connection.query('INSERT INTO categories (name) VALUES ($1);', [categoryName]);
 }
 
 export {
