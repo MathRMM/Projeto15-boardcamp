@@ -11,6 +11,7 @@ export default async function postCategorySchema(req, res, next){
         if((await getCategories(name).length !== 0)){
             return res.sendStatus(409);
         }
+        res.locals = {name,}
         return next();
     } catch (error) {
         console.error(error)

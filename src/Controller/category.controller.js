@@ -5,7 +5,7 @@ const getCategoriesController = async(req, res)=>{
 }
 
 const insertCategoriesController = async (req, res) =>{
-    const {name} = req.body
+    const {name} = res.locals
 
     try {
         await insertCategory(name)

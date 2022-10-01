@@ -1,7 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 
-import categoriesRoute from './Routes/categories.router.js'
+import categoriesRoutes from './Routes/categories.router.js'
+import gamesRoutes from './Routes/games.router.js'
 
 const app = express();
 app.use(cors())
@@ -12,6 +13,7 @@ app.get('/status', (req, res)=>{
     return res.status(200).send('ok')
 })
 
-app.use(categoriesRoute)
+app.use(categoriesRoutes)
+app.use(gamesRoutes)
 
 app.listen(4000, ()=>console.log('listening port on 4000'))

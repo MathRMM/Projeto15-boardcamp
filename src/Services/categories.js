@@ -10,7 +10,7 @@ const getCategories = async(categoryName)=>{
 };
 
 const insertCategory = async (categoryName)=>{
-    await connection.query('INSERT INTO categories (name) VALUES ($1);', [categoryName]);
+    return await connection.query('INSERT INTO categories (name) VALUES ($1);', [categoryName]);
 }
 
 export {
