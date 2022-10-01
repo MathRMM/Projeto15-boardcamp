@@ -1,30 +1,33 @@
-import Joi from "joi";
-
-const gamesObjectSchemas = Joi.object({
-    name: Joi.string().min(3).empty('').required(),
-    image: Joi.link().required(),
-    stockTotal: Joi.number().required(),
-    categoryId: Joi.number().required(),
-    pricePerDay: Joi.number().required(),
-})
+import { gamesObjectSchemas } from "./schemas.js";
+import { getGames } from "../Services/games.js";
 
 const insertGameSchemas = async (req, res)=>{
     const {name,
     image,
     stockTotal,
     categoryId,
-    pricePerDay,}=req.body
+    pricePerDay,}=req.body;
 
-    const validationSchema = gamesObjectSchemas.validate({
+    const gameObj = {
         name,
         image,
         stockTotal,
         categoryId,
         pricePerDay,
-    }, {abortEarly:false})
+    };
+
+    const validationSchema = gamesObjectSchemas.validate(gameObj, {abortEarly:false})
 
     if(validationSchema.error){
         const errors = validationSchema.error.details.map(detail=> detail.message)
-        return res.status(422).send(errors)
+        return res.status(400).send(errors)
     }
+
+    if(getGames(name)){
+        return res.sendStatus(409)
+    }
+
+    res.locals.gameObj = gameObj
 }
+
+export default insertGameSchemas;

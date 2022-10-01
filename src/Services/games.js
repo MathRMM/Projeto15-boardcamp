@@ -1,6 +1,16 @@
 import { connection } from "./database.js";
 
-const getGames = async () => {
+const getGames = async (game) => {
+    if(game){
+        return (await connection.query(`
+    SELECT games.*, categories.name AS "categoryName" 
+    FROM games 
+    JOIN categories 
+    ON games."categoryId" = categories.id
+    WHERE games.name = $1;
+    `, [game])).rows;
+    }
+
     return (await connection.query(`
     SELECT games.*, categories.name AS "categoryName" 
     FROM games 
