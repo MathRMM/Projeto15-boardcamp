@@ -1,5 +1,5 @@
 import { getGameId } from "../Services/connectGames.js";
-import { insertRental, getRentals, updateRental } from "../Services/connectRentals.js";
+import { insertRental, getRentals, updateRental, deleteRental } from "../Services/connectRentals.js";
 
 const insertRentalController = async (req, res) =>{
     const {customerId, gameId, daysRented} = res.locals.body
@@ -23,27 +23,6 @@ const insertRentalController = async (req, res) =>{
         return res.sendStatus(201);
     } catch (error) {
         console.error(error)
-        return res.sendStatus(500);
-    }
-}
-
-const finishingRentedController = async (req,res) =>{
-    const {id} = req.params;
-    const date = new Date(Date.now());
-
-    try {
-        const rental = await getRentals({rentalId:id})
-        rental[0].returnDate = date.toLocaleDateString('en-US')
-        const game = await getGameId(rental[0].gameId)
-        const rentDate = new Date(rental[0].rentDate)
-        const delayFee = ((Math.floor((date - rentDate)/(1000 * 60 * 60 * 24) - rental[0].daysRented))* game[0].pricePerDay);
-        if(delayFee > 0){
-            rental[0].delayFee = delayFee
-        }
-        console.log(await updateRental({...rental[0]}))
-        return res.status(200).send(rental);
-    } catch (error) {
-        console.error(error);
         return res.sendStatus(500);
     }
 }
@@ -125,4 +104,44 @@ const getRentalController = async (req, res) =>{
     }
 }
 
-export {insertRentalController, getRentalController, finishingRentedController}
+const finishingRentedController = async (req,res) =>{
+    const {id} = req.params;
+    const date = new Date(Date.now());
+
+    try {
+        const rental = await getRentals({rentalId:id})
+        rental[0].returnDate = date.toLocaleDateString('en-US')
+        const game = await getGameId(rental[0].gameId)
+        const rentDate = new Date(rental[0].rentDate)
+        const delayFee = ((Math.floor((date - rentDate)/(1000 * 60 * 60 * 24) - rental[0].daysRented))* game[0].pricePerDay);
+        if(delayFee > 0){
+            rental[0].delayFee = delayFee
+        }
+        console.log(await updateRental({...rental[0]}))
+        return res.status(200).send(rental);
+    } catch (error) {
+        console.error(error);
+        return res.sendStatus(500);
+    }
+}
+
+const deleteRentalsController = async(req, res) => {
+    const {id} = req.params
+    try {
+        const rental = await getRentals({rentalId:id})
+        if(!rental[0]){
+            return res.sendStatus(404)
+        }
+        if(!rental[0].returnDate){
+            return res.sendStatus(400)
+        }
+
+        await deleteRental(id)
+        return res.sendStatus(200)
+    } catch (error) {
+        console.error(error)
+        return res.sendStatus(500)
+    }
+}
+
+export {insertRentalController, getRentalController, finishingRentedController, deleteRentalsController}

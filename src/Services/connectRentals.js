@@ -82,4 +82,11 @@ const getRentals = async ({customerId, gameId, getAll, rentalId}) =>{
     }
 }
 
-export {insertRental, getRentals, updateRental}
+const deleteRental = async (id)=>{
+    return (await connection.query(`
+        DELETE FROM rentals
+        WHERE id = $1
+    `, [id]))
+}
+
+export {insertRental, getRentals, updateRental, deleteRental}
