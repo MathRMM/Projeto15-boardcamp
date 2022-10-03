@@ -1,5 +1,5 @@
 import { getGameId } from "../Services/connectGames.js";
-import { insertRental, getRentals } from "../Services/connectRentals.js";
+import { insertRental, getRentals, updateRental } from "../Services/connectRentals.js";
 
 const insertRentalController = async (req, res) =>{
     const {customerId, gameId, daysRented} = res.locals.body
@@ -36,9 +36,12 @@ const finishingRentedController = async (req,res) =>{
         rental[0].returnDate = date.toLocaleDateString('en-US')
         const game = await getGameId(rental[0].gameId)
         const rentDate = new Date(rental[0].rentDate)
-        rental[0].delayFee = ((Math.floor((date - rentDate)/(1000 * 60 * 60 * 24) - rental[0].daysRented))* game[0].pricePerDay);
-        return res.send(rental)
-        
+        const delayFee = ((Math.floor((date - rentDate)/(1000 * 60 * 60 * 24) - rental[0].daysRented))* game[0].pricePerDay);
+        if(delayFee > 0){
+            rental[0].delayFee = delayFee
+        }
+        console.log(await updateRental({...rental[0]}))
+        return res.status(200).send(rental);
     } catch (error) {
         console.error(error);
         return res.sendStatus(500);

@@ -19,6 +19,24 @@ const insertRental = async({
     daysRented, returnDate, originalPrice, delayFee])
 }
 
+const updateRental = async({
+    customerId,
+    gameId,
+    rentDate,
+    daysRented,
+    returnDate,
+    originalPrice,
+    delayFee,
+    id
+})=>{
+    return await connection.query(`
+        UPDATE rentals
+        SET "customerId" = $1, "gameId" = $2, "rentDate" = $3, "daysRented" = $4, "returnDate" = $5, "originalPrice" = $6, "delayFee" = $7
+        WHERE id = $8;
+    ` , [customerId, gameId, rentDate, 
+    daysRented, returnDate, originalPrice, delayFee, id]);
+}
+
 const getRentals = async ({customerId, gameId, getAll, rentalId}) =>{
     if(getAll){
         return (await connection.query(`
@@ -64,4 +82,4 @@ const getRentals = async ({customerId, gameId, getAll, rentalId}) =>{
     }
 }
 
-export {insertRental, getRentals}
+export {insertRental, getRentals, updateRental}
