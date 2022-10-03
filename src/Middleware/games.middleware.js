@@ -1,12 +1,8 @@
+import { getGames } from "../Services/connectGames.js";
 import { gamesObjectSchemas } from "./schemas.js";
-import { getGames } from "../Services/games.js";
 
-const insertGameSchemas = async (req, res)=>{
-    const {name,
-    image,
-    stockTotal,
-    categoryId,
-    pricePerDay,}=req.body;
+const insertGameSchemas = async (req, res, next) => {
+    const { name, image, stockTotal, categoryId, pricePerDay } = req.body;
 
     const gameObj = {
         name,
@@ -16,18 +12,23 @@ const insertGameSchemas = async (req, res)=>{
         pricePerDay,
     };
 
-    const validationSchema = gamesObjectSchemas.validate(gameObj, {abortEarly:false})
+    const validationSchema = gamesObjectSchemas.validate(gameObj, {
+        abortEarly: false,
+    });
 
-    if(validationSchema.error){
-        const errors = validationSchema.error.details.map(detail=> detail.message)
-        return res.status(400).send(errors)
+    if (validationSchema.error) {
+        const errors = validationSchema.error.details.map(
+            (detail) => detail.message
+        );
+        return res.status(400).send(errors);
     }
 
-    if(getGames(name)){
-        return res.sendStatus(409)
+    if (Object.keys(await getGames(name)).length !== 0) {
+        return res.sendStatus(409);
     }
 
-    res.locals.gameObj = gameObj
-}
+    res.locals.gameObj = gameObj;
+    next();
+};
 
 export default insertGameSchemas;

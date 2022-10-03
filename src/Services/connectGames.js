@@ -1,14 +1,15 @@
 import { connection } from "./database.js";
 
-const getGames = async (game) => {
-    if(game){
+const getGames = async (gameName) => {
+    if(gameName){
         return (await connection.query(`
     SELECT games.*, categories.name AS "categoryName" 
     FROM games 
     JOIN categories 
     ON games."categoryId" = categories.id
-    WHERE games.name = $1;
-    `, [game])).rows;
+    WHERE games.name 
+    LIKE $1;
+    `, [gameName + '%'])).rows;
     }
 
     return (await connection.query(`
@@ -19,6 +20,16 @@ const getGames = async (game) => {
     `)).rows;
 };
 
+const getGameId = async (id) =>{
+    return (await connection.query(`
+    SELECT games.*, categories.name AS "categoryName" 
+    FROM games 
+    JOIN categories 
+    ON games."categoryId" = categories.id
+    WHERE games.id = $1 
+    ;`, [id])).rows;
+}
+
 const insertGame = async ({
     name,
     image,
@@ -26,12 +37,6 @@ const insertGame = async ({
     categoryId,
     pricePerDay,
 }) => {
-    name = "teste";
-    image = "teste";
-    stockTotal = "teste";
-    categoryId = "1";
-    pricePerDay = 1500;
-
     return await connection.query(`
     INSERT INTO games (name, image, "stockTotal", "categoryId", "pricePerDay") 
     VALUES ($1, $2, $3, $4, $5);
@@ -40,4 +45,4 @@ const insertGame = async ({
     );
 };
 
-export { getGames, insertGame };
+export { getGames, insertGame, getGameId };

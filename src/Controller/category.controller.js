@@ -1,4 +1,4 @@
-import { getCategories, insertCategory } from '../Services/categories.js'
+import { getCategories, insertCategory } from '../Services/connectCategories.js'
 
 const getCategoriesController = async(req, res)=>{
     res.send(await getCategories())

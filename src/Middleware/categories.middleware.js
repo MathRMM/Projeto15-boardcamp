@@ -1,4 +1,4 @@
-import { getCategories } from "../Services/categories.js"
+import { getCategories } from "../Services/connectCategories.js"
 
 export default async function postCategorySchema(req, res, next){
     const {name} = req.body
@@ -8,7 +8,7 @@ export default async function postCategorySchema(req, res, next){
     }
 
     try {
-        if((await getCategories(name).length !== 0)){
+        if((await getCategories(name)).length !== 0){
             return res.sendStatus(409);
         }
         res.locals = {name,}
